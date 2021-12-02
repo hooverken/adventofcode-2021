@@ -10,9 +10,9 @@ param (
 
 $movelist = Get-Content $inputfile
 
-$downs = 0 ; $ups = 0 ; $depth = 0
+$downs = 0 ; $ups = 0
 
-$movelist | % { 
+$movelist | foreach-object { 
     $direction = $_.split(' ')[0] 
     $count = $_.split(' ')[1].toInt32($null) ;
 
