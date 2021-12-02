@@ -1,1 +1,1 @@
-Day 2 puzzles link: https://adventofcode.com/2021/day/2
+Day 2's puzzles are slightly more complex so a one-liner didn't cut it.  However, I was able to get the right answer on the first try for both.
