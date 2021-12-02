@@ -1,1 +1,0 @@
-Puzzles at https://adventofcode.com/2021/day/1
