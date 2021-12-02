@@ -10,7 +10,7 @@ param (
 
 $movelist = Get-Content $inputfile
 
-$downs = 0 ; $ups = 0
+$downs = 0 ; $ups = 0 ;
 
 $movelist | foreach-object { 
     $direction = $_.split(' ')[0] 
@@ -19,6 +19,7 @@ $movelist | foreach-object {
     switch ($direction) {
         'forward' {
             $forwards += $count
+
             break
         }
         'down' {
