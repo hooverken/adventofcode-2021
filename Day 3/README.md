@@ -1,2 +1,1 @@
-Day 3's puzzles involve decoding input that comes in the form of binary strings like "001010110".
-
+Day 3's puzzles involve decoding input that comes in the form of binary strings like "001010110".  The first part I was able to knock out pretty quickly (but not very elegantly) but the second part sent me back to the drawing board algorithm-wise but I finally got it working late on day 3.  Whew!
