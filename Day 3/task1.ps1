@@ -192,206 +192,141 @@ $epsilon['position11'] -eq 1 ? ($epsilonValue += 2048) : $null | out-null
 
 Write-Host "The epsilon value is :: $epsilonValue"
 
-Write-Host "PART 1 ANSWER :: The gamma value multiplied by the epsilon value is :: " ($gammavalue * $epsilonValue)
+Write-Host "`n>>> PART 1 ANSWER <<< The gamma value multiplied by the epsilon value is :: " ($gammavalue * $epsilonValue) 
 
 ####################################################################################
 # PART 2
 
-# Oxygen Generator rating calculation
-
-
-# $mostCommon = @{
-#     'position0' = ($oneBitsCounter['position0'] - $zeroBitsCounter['position0'] -ge 0) ? 1 : 0
-#     'position1' = ($oneBitsCounter['position1'] - $zeroBitsCounter['position1'] -ge 0) ? 1 : 0
-#     'position2' = ($oneBitsCounter['position2'] - $zeroBitsCounter['position2'] -ge 0) ? 1 : 0
-#     'position3' = ($oneBitsCounter['position3'] - $zeroBitsCounter['position3'] -ge 0) ? 1 : 0
-#     'position4' = ($oneBitsCounter['position4'] - $zeroBitsCounter['position4'] -ge 0) ? 1 : 0
-#     'position5' = ($oneBitsCounter['position5'] - $zeroBitsCounter['position5'] -ge 0) ? 1 : 0
-#     'position6' = ($oneBitsCounter['position6'] - $zeroBitsCounter['position6'] -ge 0) ? 1 : 0
-#     'position7' = ($oneBitsCounter['position7'] - $zeroBitsCounter['position7'] -ge 0) ? 1 : 0
-#     'position8' = ($oneBitsCounter['position8'] - $zeroBitsCounter['position8'] -ge 0) ? 1 : 0
-#     'position9' = ($oneBitsCounter['position9'] - $zeroBitsCounter['position9'] -ge 0) ? 1 : 0
-#     'position10' = ($oneBitsCounter['position10'] - $zeroBitsCounter['position10'] -ge 0) ? 1 : 0
-#     'position11' = ($oneBitsCounter['position11'] - $zeroBitsCounter['position11'] -ge 0) ? 1 : 0
-# }
-
-# $leastCommon = @{
-#     'position0' = ($oneBitsCounter['position0'] - $zeroBitsCounter['position0'] -le 0) ? 1 : 0
-#     'position1' = ($oneBitsCounter['position1'] - $zeroBitsCounter['position1'] -le 0) ? 1 : 0
-#     'position2' = ($oneBitsCounter['position2'] - $zeroBitsCounter['position2'] -le 0) ? 1 : 0
-#     'position3' = ($oneBitsCounter['position3'] - $zeroBitsCounter['position3'] -le 0) ? 1 : 0
-#     'position4' = ($oneBitsCounter['position4'] - $zeroBitsCounter['position4'] -le 0) ? 1 : 0
-#     'position5' = ($oneBitsCounter['position5'] - $zeroBitsCounter['position5'] -le 0) ? 1 : 0
-#     'position6' = ($oneBitsCounter['position6'] - $zeroBitsCounter['position6'] -le 0) ? 1 : 0
-#     'position7' = ($oneBitsCounter['position7'] - $zeroBitsCounter['position7'] -le 0) ? 1 : 0
-#     'position8' = ($oneBitsCounter['position8'] - $zeroBitsCounter['position8'] -le 0) ? 1 : 0
-#     'position9' = ($oneBitsCounter['position9'] - $zeroBitsCounter['position9'] -le 0) ? 1 : 0
-#     'position10' = ($oneBitsCounter['position10'] - $zeroBitsCounter['position10'] -le 0) ? 1 : 0
-#     'position11' = ($oneBitsCounter['position11'] - $zeroBitsCounter['position11'] -le 0) ? 1 : 0
-# }
-
-# $positionValuesTable = @{
-#     'position0' = 1
-#     'position1' = 2
-#     'position2' = 4
-#     'position3' = 8
-#     'position4' = 16
-#     'position5' = 32
-#     'position6' = 64
-#     'position7' = 128
-#     'position8' = 256
-#     'position9' = 512
-#     'position10' = 1024
-#     'position11' = 2048
-# }
-
-$leastCommon = @{
-    '1' = 0
-    '0' = 0
-}
-
 function findLeastCommonValueForPosition {
+    # Returns the value that is least used in the given string position ('1' or '0')
+    # Ties (where both values match) are won by zeroes for least-used test
     param (
-        [Parameter()][int32]$position
+        [Parameter(ValueFromPipeline=$true)][string[]]$itemlist,
+        [Parameter(ValueFromPipeline=$true)][int32]$position
     )
     # Returns the least common value for the characters in the given position in the list of strings passed in
 
-    $tracker = @{}
-    $position
-    
-    $datapoints | ForEach-Object { 
-        if ($position -le $_.count) {
-            $tracker[$_[$position]] += 1
+    begin {
+        $zerocounter = 0
+        $onecounter = 0
+    } 
+
+    process {    
+        $datapoints | ForEach-Object { 
+            # write-verbose ("Value in position $position is " + $_[$position])
+            if ($_[$position] -eq '0') { $zerocounter++} else { $onecounter++ }
         }
     }
-
-    $tracker
-
-    $result = ($tracker[1] -ge $tracker[0]) ? '1' : '0'
-
-    Write-Verbose "Returning $result"
-    # We need the least common so return the key with the lowest value
-    return $result
+    end {   
+        write-verbose "Number of zeros is $zerocounter"
+        write-verbose "Number of ones is $onecounter"
+    
+        if ($zerocounter -le $onecounter) { return '0' }
+        if ($onecounter -lt $zerocounter) { return '1' }
+    }
 }
 
 
+function findMostCommonValueForPosition {
+    # Returns the value that is least used in the given string position ('1' or '0')
+    # Ties (where both values match) are won by ones for most-used test
+    param (
+        [Parameter(ValueFromPipeline=$true)][string[]]$itemlist,
+        [Parameter(ValueFromPipeline=$true)][int32]$position
+    )
+    # Returns the least common value for the characters in the given position in the list of strings passed in
+
+    begin {
+        $zerocounter = 0
+        $onecounter = 0
+    } 
+
+    process {    
+        $datapoints | ForEach-Object { 
+            # write-verbose ("Value in position $position is " + $_[$position])
+            if ($_[$position] -eq '0') { $zerocounter++} else { $onecounter++ }
+        }
+    }
+
+    end {   
+        write-verbose "Number of zeros is $zerocounter"
+        write-verbose "Number of ones is $onecounter"
+    
+        if ($zerocounter -gt $onecounter) { return '0' }
+        if ($onecounter -ge $zerocounter) { return '1'}
+    }
+
+}
+
+#########################################################
+
+# Calculate Oxygen Generator Value 
 $dataPoints = (Get-Content $inputfile)  # start with all data values in the set
 
-0..11 | % { 
-    $leastCommon[$_] = findLeastCommonValueForPosition($_)
-}
+0..$dataPoints[0].Length | % { 
+    write-verbose ("Counting most common values for position $_ ")
 
-$leastCommon
-exit
+    $position = $_ 
 
-$positions = "position4", "position3", "position2", "position1", "position0"
-
-# Make a new array of integers which are the integer representation of the binary values in the input data
-[int32[]] $integerDataPoints = $dataPoints | ForEach-Object {[Convert]::ToInt32($_,2)}
-
-$oxygenDataPoints = $integerDataPoints
-
-Write-Verbose ("There are " + $oxygenDataPoints.Length + " data points")
-
-
-
-$positions | ForEach-Object {
-
-    $currentPosition = $_
-    $newOxygenDataPoints = @()
-
-    if ($oxygenDataPoints.Count -gt 1) { 
-        Write-Verbose "Sifting on position $currentPosition"
-        # Write-Verbose ("Position index is " + $positions.IndexOf($currentPosition) )
-
-        if ($mostCommon[$currentPosition] -eq 1) {  # sift for ones.
-            Write-Verbose "Looking for most common in position $currentPosition"
-            $oxygenDataPoints | % {
-                if (($mostCommon[$currentPosition] -eq 1) -and ($_ -band (1 -shl (11 - $positions.IndexOf($currentPosition))))) {
-                    Write-Verbose ("Value $_ has a 1 bit in position $currentPosition `t(" + [Convert]::ToString($_,2).PadLeft(12,'0') + ")")
-                    $newOxygenDataPoints += $_
-                } else {
-                    # Write-Verbose ("Value $_ has a 0 bit in position $currentPosition (" + [Convert]::ToString($_,2) + ")")
-                }
-            }
-
-        } else {
-            # 1 is not the most common value so sift for zeroes instead.  Notice the bang in the comparison to invert the -band
-            Write-Verbose "Looking for least common in position $currentPosition"
-            $oxygenDataPoints | % {
-                if (($leastCommon[$currentPosition] -eq 1) -and (!($_ -band (1 -shl (11 - $positions.IndexOf($currentPosition)))))) {
-                    Write-Verbose ("Value $_ has a 0 bit in position $currentPosition `t(" + [Convert]::ToString($_,2).PadLeft(12,'0') + ")")
-                    $newOxygenDataPoints += $_
-                } else {
-                    # Write-Verbose ("Value $_ has a 1 bit in position $currentPosition (" + [Convert]::ToString($_,2) + ")")
-                }
-            }
-        }
-
-        if ($newOxygenDataPoints) { 
-            $oxygenDataPoints = $newOxygenDataPoints
-            Remove-Variable -Name newOxygenDataPoints
-        }
-
-        write-verbose ($OxygenDataPoints.Count.ToString() + " data points left")
-    }
-}
-
-$oxygenRating = $oxygenDataPoints[0]
-
-Write-Host ("Oxygen Generator Rating is :: " + $oxygenRating)
-
-######################################################
-
-# Now get the scrubber rating by doing the same thing with flipped conditions (least common instead of most common)
-
-$scrubberDataPoints = $integerDataPoints
-
-Write-Verbose ("There are " + $scrubberDataPoints.Length + " scrubber data points")
-
-$positions | ForEach-Object {
-
-    $currentPosition = $_
-    $newScrubberDataPoints = @()
-    $valueToSeek = $leastCommon[$currentPosition] # will be 0 or 1
-
-    Write-Verbose ("Sifting for $valueToSeek in position $currentPosition")
-
-   #  Write-Verbose "Looking for least common in position $currentPosition"
-
-    if ($scrubberDataPoints.Count -gt 1) {         
-        $scrubberDataPoints | % {
-            Write-Verbose ("Value $_ has binary representation `t`t`t`t(" + [Convert]::ToString($_,2).PadLeft(12,'0') + ")")
-            Write-Verbose ("Seeking a match with `t`t`t`t`t`t(" + [Convert]::ToString($positionValuesTable[$currentPosition],2).PadLeft(12,'0') + ")")
-
-            if ($valueToSeek -eq 1) {
-                if ($_ -band $positionValuesTable[$currentPosition]) {
-                    Write-Verbose ("Keeping value $_ because it has $valueToSeek in position $currentPosition `t(" + [Convert]::ToString($_,2).PadLeft(12,'0') + ")")
-                    $newScrubberDataPoints += $_
-                } else {
-                    write-verbose ("Dropping value $_ because it does not have $valueToSeek in position $currentPosition`t(" + [Convert]::ToString($_,2).PadLeft(12,'0') + ")")
-                }
+    if ($datapoints.Length -gt 1) {
+        $filteredDataPoints = @()
+        $target = ((findmostCommonValueForPosition -position $_ -itemlist $dataPoints) -eq '1')? 1 : 0
+    
+        Write-Verbose ("Most common value in position $_ is $target")
+        Write-Verbose ("There are " + $dataPoints.Length + " data values in the list: ")
+        $dataPoints | % { 
+            # Write-Verbose ("Value of $_ in position $position is " + $_[$position])
+            if ($_[$position] -eq $target.ToString()) {
+                Write-Verbose "Keeping $_"
+                $filteredDataPoints += $_
             } else {
-                if (!($_ -band $positionValuesTable[$currentPosition])) {
-                    Write-Verbose ("Keeping value $_ because it has $valueToSeek in position $currentPosition `t(" + [Convert]::ToString($_,2).PadLeft(12,'0') + ")")
-                    $newScrubberDataPoints += $_
-                } else {
-                    write-verbose ("Dropping value $_ because it does not have $valueToSeek in position $currentPosition`t(" + [Convert]::ToString($_,2).PadLeft(12,'0') + ")")
-                }
+                Write-Verbose "Rejecting $_"
             }
         }
-
-        if ($newScrubberDataPoints) { 
-            $scrubberDataPoints = $newScrubberDataPoints
-            Remove-Variable -Name newScrubberDataPoints
-        }
-
-        write-verbose ($scrubberDataPoints.Count.ToString() + " data point(s) left")
+        $dataPoints = $filteredDataPoints
+    } else {
+        Write-Verbose "Only one data point left"
     }
 }
 
-$scrubberRating = $scrubberDataPoints[0]
+$oxygenGeneratorValue = $dataPoints
 
-Write-Host ("CO2 Scrubber Rating is :: " + $scrubberRating)
+Write-Host "`nOxygen Generator value is `t$oxygenGeneratorValue (decimal value" ([Convert]::ToInt32($oxygenGeneratorValue,2))")"
 
-Write-Host ("PART 2 ANSWER -->  The Oxygen rating multiplied by the CO2 rating is :: " + ($oxygenRating * $scrubberRating))
+###############################################
+# Now do the CO2 Scrubber Value
+
+$dataPoints = (Get-Content $inputfile)  # reload with all data values in the set
+
+0..$dataPoints[0].Length | % { 
+    write-verbose ("Counting least common values for position $_")
+
+    $position = $_ 
+
+    if ($datapoints.Length -gt 1) {
+        $filteredDataPoints = @()
+        $target = ((findLeastCommonValueForPosition -position $_ -itemlist $dataPoints) -eq '1') ? 1 : 0
+    
+        Write-Verbose ("There are " + $dataPoints.Length + " data values in the list")
+        Write-Verbose ("Least common value in position $_ is $target")
+
+        $dataPoints | % { 
+            Write-Verbose ("Value of $_ in position $position is " + $_[$position])
+            if ($_[$position] -eq $target.ToString()) {
+                Write-Verbose "Keeping $_"
+                $filteredDataPoints += $_
+            } else {
+                Write-Verbose "Rejecting $_"
+            }
+        }
+        $dataPoints = $filteredDataPoints
+    } else {
+        Write-Verbose "Only one data point left"
+    }
+}
+$CO2ScrubberValue = $dataPoints
+
+Write-Host "CO2 Scrubber value is `t`t$CO2ScrubberValue (decimal value" ([Convert]::ToInt32($CO2ScrubberValue,2))")"
+
+$LifeSupportRating = ([Convert]::ToInt32($oxygenGeneratorValue,2))* ([Convert]::ToInt32($CO2ScrubberValue,2))
+Write-Host "`n>>> PART 2 ANSWER <<<  Life support rating (Oxygen Generator value * CO2 Scrubber Value) is $lifeSupportRating"
